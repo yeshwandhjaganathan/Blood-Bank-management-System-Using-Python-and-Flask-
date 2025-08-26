@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Donation History - Donor{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-history me-2"></i>Donation History</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if donations %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Blood Group</th>
+                        <th>Units Donated</th>
+                        <th>Hemoglobin Level</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for donation in donations %}
+                    <tr>
+                        <td>{{ donation.donation_date.strftime('%Y-%m-%d') }}</td>
+                        <td><span class="badge bg-danger">{{ donation.blood_group }}</span></td>
+                        <td>{{ donation.units_donated }}</td>
+                        <td>{{ donation.hemoglobin_level or '-' }} g/dL</td>
+                        <td><span class="badge bg-success">{{ donation.status.title() }}</span></td>
+                        <td>{{ donation.notes or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card bg-success">
+                        <div class="card-body text-center">
+                            <h4>{{ donations|length }}</h4>
+                            <p class="mb-0">Total Donations</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-info">
+                        <div class="card-body text-center">
+                            <h4>{{ donations|sum(attribute='units_donated') }}</h4>
+                            <p class="mb-0">Total Units Donated</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-hand-holding-medical fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No donation history</h5>
+            <p class="text-muted">Your donation history will appear here once you start donating.</p>
+            <a href="{{ url_for('donor.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

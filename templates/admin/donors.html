@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Donors - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-users me-2"></i>Donor Management</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if donors %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Blood Group</th>
+                        <th>Gender</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for donor in donors %}
+                    <tr>
+                        <td>{{ donor.full_name }}</td>
+                        <td>{{ donor.email }}</td>
+                        <td>{{ donor.phone or '-' }}</td>
+                        <td><span class="badge bg-danger">{{ donor.blood_group }}</span></td>
+                        <td>{{ donor.gender.title() if donor.gender else '-' }}</td>
+                        <td>
+                            {% if donor.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ donor.created_at.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No donors found</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

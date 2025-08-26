@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}My Requests - Patient{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-clipboard-list me-2"></i>My Blood Requests</h2>
+    <a href="{{ url_for('patient.request_blood') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>New Request
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if requests %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Request Date</th>
+                        <th>Blood Group</th>
+                        <th>Units</th>
+                        <th>Urgency</th>
+                        <th>Required By</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request.request_date.strftime('%Y-%m-%d') }}</td>
+                        <td><span class="badge bg-danger">{{ request.blood_group }}</span></td>
+                        <td>{{ request.units_required }}</td>
+                        <td>
+                            {% if request.urgency == 'urgent' %}
+                            <span class="badge bg-danger">{{ request.urgency.title() }}</span>
+                            {% elif request.urgency == 'normal' %}
+                            <span class="badge bg-warning">{{ request.urgency.title() }}</span>
+                            {% else %}
+                            <span class="badge bg-info">{{ request.urgency.title() }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ request.required_by.strftime('%Y-%m-%d') if request.required_by else '-' }}</td>
+                        <td>
+                            {% if request.status == 'pending' %}
+                            <span class="badge bg-warning">{{ request.status.title() }}</span>
+                            {% elif request.status == 'approved' %}
+                            <span class="badge bg-success">{{ request.status.title() }}</span>
+                            {% elif request.status == 'rejected' %}
+                            <span class="badge bg-danger">{{ request.status.title() }}</span>
+                            {% else %}
+                            <span class="badge bg-info">{{ request.status.title() }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.notes %}
+                            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#notesModal{{ request.id }}">
+                                View Notes
+                            </button>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    
+                    <!-- Notes Modal -->
+                    {% if request.notes %}
+                    <div class="modal fade" id="notesModal{{ request.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Request Notes</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Request Reason:</strong></p>
+                                    <p>{{ request.reason }}</p>
+                                    {% if request.notes %}
+                                    <p><strong>Admin Notes:</strong></p>
+                                    <p>{{ request.notes }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card bg-primary">
+                        <div class="card-body text-center">
+                            <h4>{{ requests|length }}</h4>
+                            <p class="mb-0">Total Requests</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-warning">
+                        <div class="card-body text-center">
+                            <h4>{{ requests|selectattr('status', 'equalto', 'pending')|list|length }}</h4>
+                            <p class="mb-0">Pending Requests</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success">
+                        <div class="card-body text-center">
+                            <h4>{{ requests|selectattr('status', 'equalto', 'approved')|list|length }}</h4>
+                            <p class="mb-0">Approved Requests</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No blood requests</h5>
+            <p class="text-muted">You haven't made any blood requests yet.</p>
+            <a href="{{ url_for('patient.request_blood') }}" class="btn btn-primary">Make Your First Request</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

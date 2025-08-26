@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard - Blood Bank Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user-injured me-2"></i>Welcome, {{ user.full_name }}</h2>
+    <a href="{{ url_for('patient.request_blood') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Request Blood
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary">
+            <div class="card-body text-center">
+                <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                <h3>{{ total_requests }}</h3>
+                <p class="mb-0">Total Requests</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x mb-2"></i>
+                <h3>{{ pending_requests }}</h3>
+                <p class="mb-0">Pending</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success">
+            <div class="card-body text-center">
+                <i class="fas fa-check fa-2x mb-2"></i>
+                <h3>{{ approved_requests }}</h3>
+                <p class="mb-0">Approved</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info">
+            <div class="card-body text-center">
+                <i class="fas fa-tint fa-2x mb-2"></i>
+                <h3>{{ user.blood_group }}</h3>
+                <p class="mb-0">Your Blood Group</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-history me-2"></i>Recent Requests</h5>
+                <a href="{{ url_for('patient.requests') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_requests %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Blood Group</th>
+                                <th>Units</th>
+                                <th>Urgency</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in recent_requests %}
+                            <tr>
+                                <td>{{ request.request_date.strftime('%Y-%m-%d') }}</td>
+                                <td><span class="badge bg-danger">{{ request.blood_group }}</span></td>
+                                <td>{{ request.units_required }}</td>
+                                <td>
+                                    {% if request.urgency == 'urgent' %}
+                                    <span class="badge bg-danger">{{ request.urgency.title() }}</span>
+                                    {% elif request.urgency == 'normal' %}
+                                    <span class="badge bg-warning">{{ request.urgency.title() }}</span>
+                                    {% else %}
+                                    <span class="badge bg-info">{{ request.urgency.title() }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.status == 'pending' %}
+                                    <span class="badge bg-warning">{{ request.status.title() }}</span>
+                                    {% elif request.status == 'approved' %}
+                                    <span class="badge bg-success">{{ request.status.title() }}</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">{{ request.status.title() }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                    <p class="text-muted mb-3">No requests yet</p>
+                    <a href="{{ url_for('patient.request_blood') }}" class="btn btn-primary">Make Your First Request</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-warehouse me-2"></i>Blood Availability</h5>
+            </div>
+            <div class="card-body">
+                {% if inventory %}
+                {% for item in inventory %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-danger">{{ item.blood_group }}</span>
+                    <span class="fw-bold">{{ item.units_available }} units</span>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-muted">No inventory data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
