@@ -55,7 +55,7 @@ Optional: Flask-Mail / SendGrid for email notifications
 ✅ Setup Instructions
 
 # Clone repository
-git clone https://github.com/yeshwandhjaganathan/blood-bank-management-flask.git
+git clone .https://github.com/yeshwandhjaganathan/Blood-Bank-management-System-Using-Python-and-Flask-.git
 
 # Navigate into project
 cd blood-bank-management-flask
